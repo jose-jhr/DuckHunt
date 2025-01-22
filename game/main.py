@@ -1,3 +1,6 @@
+#fontSize = 13
+
+
 #1 pygame
 import pygame
 import os
@@ -89,7 +92,8 @@ with handsMp.Hands(static_image_mode=False,
         fps = frame_counter / (time.time() - start_time)
 
         # Display the FPS on the frame
-        cv.putText(frame, f"FPS: {fps:.3f}", (30, 30), cv.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 255), 2, cv.LINE_AA)
+        cv.putText(frame, f"FPS: {fps:.3f}", (30, 30),
+                   cv.FONT_HERSHEY_PLAIN, 1.5, (0, 255, 255), 2, cv.LINE_AA)
 
         #MediaPipe --------------------------------------------------------
         # Convert the BGR image to RGB
@@ -102,8 +106,9 @@ with handsMp.Hands(static_image_mode=False,
         if results.multi_hand_landmarks is not None:
             # recorremos esos puntos multiples de referencia
             for hand_landmarks in results.multi_hand_landmarks:
-                # dibujamos los puntos de referencia (imagen,puntos referencia de la mano,describe las conexiones
-                # de los puntos de referencia,
+                # dibujamos los puntos de referencia
+                # (imagen,puntos referencia de la mano,describe las conexiones
+                # de los puntos de oreferencia,
                 mpDraw.draw_landmarks(
                     frame,
                     hand_landmarks,
@@ -151,7 +156,7 @@ with handsMp.Hands(static_image_mode=False,
                         soundGun.play()
                         isDisparo = True #para que no se repita el sonido
                 else:
-                    print("no disparo")
+                   # print("no disparo")
                     isDisparo = False
 
 
@@ -159,8 +164,6 @@ with handsMp.Hands(static_image_mode=False,
                 groupAves.draw(screen)
                 #dibujamos la mira en la pantalla
                 pygame.draw.circle(screen, (255, 0, 0), (int(x), int(y)), 10)
-
-
 
         # Display the frame on the screen
         cv.imshow("frame", cv.flip(frame, 1))
