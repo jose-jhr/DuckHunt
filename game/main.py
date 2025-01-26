@@ -32,9 +32,9 @@ frame_counter = 0
 
 
 #ancho imagen
-screenWidth = 800
+screenWidth = 1000
 #alto imagen
-screenHeight = 600
+screenHeight = 800
 #tamaño de pantalla max display(1)
 screen = pygame.display.set_mode((screenWidth, screenHeight))
 
@@ -44,7 +44,7 @@ pygame.display.set_caption("Disparos")
 #get image from file (1)
 background = pygame.image.load(os.path.join("../img", "fondo.png"))
 #scale image to screen size (1)
-background = pygame.transform.scale(background, (800, 600))
+background = pygame.transform.scale(background, (screenWidth, screenHeight))
 
 
 #MediaPipe (3) --------------------------------------------------------
@@ -58,8 +58,17 @@ soundGun = pygame.mixer.Sound(os.path.join("../sound", "gun.mp3"))
 isDisparo = False
 
 #(5) ave sprintes
-aves = AvesSprites(screenWidth,screenHeight)
-groupAves = pygame.sprite.Group(aves)
+arrayAves = []
+#numero de aves
+numAves = 10
+[arrayAves.append(AvesSprites(screenWidth,screenHeight)) for i in range(numAves)]
+#creamos un grupo de aves
+groupAves = pygame.sprite.Group()
+#create list of aves
+for i in range(numAves):
+    groupAves.add(arrayAves[i])
+
+
 
 
 with handsMp.Hands(static_image_mode=False,
@@ -122,20 +131,14 @@ with handsMp.Hands(static_image_mode=False,
                 #obtenemos del punto 7 de la mano la posición en x y y
                 x2 = hand_landmarks.landmark[7].x * frame_width
                 y2 = hand_landmarks.landmark[7].y * frame_height
-                #calculamos el angulo que se forma entre estos dos puntos
-                #angle = np.arctan2(y2 - y, x2 - x)
-                #convertimos el angulo a grados
-                #angle = np.degrees(angle)
-                #print(angle)
-                #camara 640 480
                 #draw rectangle in frame con 200 de separación todo centrado
                 cv.rectangle(frame, (int(frame_width/2)-100, int(frame_height/2)-100),
                              (int(frame_width/2)+100, int(frame_height/2)+100), (0, 255, 0), 2)
                 #invertimos el valor de x
                 x = frame_width - x
                 #normalizar el valor de x y y
-                x = np.interp(x, (int(frame_width/2)-100, int(frame_width/2)+100), (0, 800))
-                y = np.interp(y, (int(frame_height/2)-100, int(frame_height/2)+100), (0, 600))
+                x = np.interp(x, (int(frame_width/2)-100, int(frame_width/2)+100), (0, screenWidth))
+                y = np.interp(y, (int(frame_height/2)-100, int(frame_height/2)+100), (0, screenHeight))
 
                 #4 angle disparo
                 #get position point 4
@@ -143,21 +146,27 @@ with handsMp.Hands(static_image_mode=False,
                 y1p = hand_landmarks.landmark[4].y * frame_height
 
                 #get position point 2
-                x2p = hand_landmarks.landmark[2].x * frame_width
-                y2p = hand_landmarks.landmark[2].y * frame_height
+                x2p = hand_landmarks.landmark[3].x * frame_width
+                y2p = hand_landmarks.landmark[3].y * frame_height
 
                 #calculate angle
                 angle = np.arctan2(y2p - y1p, x2p - x1p)
                 angle = np.degrees(angle)
-
+                #print(angle)
                 if angle < 0:
-                    print("disparo")
+                    #print("disparo")
                     if not isDisparo:
                         soundGun.play()
                         isDisparo = True #para que no se repita el sonido
+                        """Evaluamos si existe alguna colicion en todos los sprites..."""
+                        for avesColision in arrayAves:
+                            isColision = avesColision.colision(x, y)
+                            if isColision:
+                                print("colision")
                 else:
                    # print("no disparo")
                     isDisparo = False
+
 
 
                 groupAves.update()
