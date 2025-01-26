@@ -32,9 +32,9 @@ frame_counter = 0
 
 
 #ancho imagen
-screenWidth = 1000
+screenWidth = 800
 #alto imagen
-screenHeight = 800
+screenHeight = 600
 #tamaño de pantalla max display(1)
 screen = pygame.display.set_mode((screenWidth, screenHeight))
 
